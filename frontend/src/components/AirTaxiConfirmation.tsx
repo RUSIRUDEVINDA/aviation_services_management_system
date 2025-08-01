@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CalendarClock, Users, Clock, MapPin, Plane, Shield, Umbrella } from 'lucide-react';
-import { format, parseISO, addHours, isBefore } from 'date-fns';
+import { format, addHours, isBefore } from 'date-fns';
+import { parseISO } from "date-fns";
 
 
 
@@ -37,13 +38,13 @@ const AirTaxiConfirmation: React.FC<AirTaxiConfirmationProps> = ({ bookingDetail
   });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
-  const estimatedDuration = 30; // minutes
+  const estimatedDuration = 30; 
 
   // Calculate price based on selected taxi model or use default pricing - with safer null checks
   const basePrice = bookingDetails.taxiModel ? bookingDetails.taxiModel.price : 150;
   const passengerCount = bookingDetails.passengers || 1;
 
-  // If we have a selected taxi model, use its price; otherwise use the old calculation
+
   const totalPrice = bookingDetails.taxiModel 
     ? bookingDetails.taxiModel.price 
     : basePrice + (passengerCount - 1) * 50;
@@ -68,7 +69,7 @@ const AirTaxiConfirmation: React.FC<AirTaxiConfirmationProps> = ({ bookingDetail
       if (!phoneRegex.test(contactPhone)) {
         newErrors.contactPhone = 'Invalid characters in phone number';
       } else {
-        // Remove formatting characters to count only digits
+      
         const digitsOnly = contactPhone.replace(/\D/g, '');
         // Check for valid length according to international standards (E.164)
         if (digitsOnly.length < 7) {
