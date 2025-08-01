@@ -9,14 +9,14 @@ interface RequestProps {
 type FilterType = 'all' | 'cancellation' | 'modification';
 
 const UserRequests: React.FC<RequestProps> = ({ requests, onRefresh }) => {
-  // Define all state hooks first to maintain consistent order
+  
   const [isLoading, setIsLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [filteredRequests, setFilteredRequests] = useState<any[]>([]);
   
-  // Define useEffect hook immediately after all state hooks
+
   useEffect(() => {
-    // Sort all requests by date (newest first)
+
     const sortedRequests = [...requests].sort((a, b) => {
       const dateA = new Date(a.requestDate || a.createdAt).getTime();
       const dateB = new Date(b.requestDate || b.createdAt).getTime();

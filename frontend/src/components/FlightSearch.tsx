@@ -43,7 +43,7 @@ const FlightSearch: React.FC<FlightSearchProps> = ({ onSearch, isLoading }) => {
     // Validate dates
     const depDate = new Date(departureDate);
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to start of day for comparison
+    today.setHours(0, 0, 0, 0); 
     
     if (depDate < today) {
       toast({
@@ -283,7 +283,7 @@ const FlightSearch: React.FC<FlightSearchProps> = ({ onSearch, isLoading }) => {
                 onChange={(e) => setFlightClass(e.target.value)}
               >
                 <option value="economy">Economy</option>
-                {/* <option value="premium_economy">Premium Economy</option> */}
+            
                 <option value="business">Business</option>
                 <option value="first">First Class</option>
               </select>

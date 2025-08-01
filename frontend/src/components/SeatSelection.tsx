@@ -33,7 +33,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ passengerCount, onContinu
         // Add the seat
         setSelectedReturnSeats([...selectedReturnSeats, seat]);
         
-        // Move to next passenger if not last
+      
         if (currentPassenger < passengerCount - 1) {
           setCurrentPassenger(currentPassenger + 1);
         }
@@ -46,11 +46,11 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ passengerCount, onContinu
         // Add the seat
         setSelectedOutboundSeats([...selectedOutboundSeats, seat]);
         
-        // Move to next passenger if not last and if all passengers have outbound seats, switch to return tab
+        
         if (currentPassenger < passengerCount - 1) {
           setCurrentPassenger(currentPassenger + 1);
         } else if (isRoundTrip && selectedOutboundSeats.length === passengerCount - 1) {
-          // Reset passenger counter and switch to return tab
+          
           setTimeout(() => {
             setCurrentPassenger(0);
             setActiveTab('return');
@@ -80,7 +80,7 @@ const SeatSelection: React.FC<SeatSelectionProps> = ({ passengerCount, onContinu
 
   const handleContinue = () => {
     if (isRoundTrip) {
-      // Create a combined structure with outbound and return seats
+     
       const seatData = {
         seats: {
           outbound: selectedOutboundSeats,

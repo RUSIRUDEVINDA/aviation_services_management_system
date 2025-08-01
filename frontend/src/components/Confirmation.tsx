@@ -14,7 +14,7 @@ interface ConfirmationProps {
 const Confirmation: React.FC<ConfirmationProps> = ({ bookingDetails, bookingType }) => {
   const ticketRef = useRef<HTMLDivElement>(null);
 
-  // Generate random terminal and gate information
+ 
   const generateRandomTerminal = () => {
     const terminals = ['T1', 'T2', 'T3', 'T4', 'International'];
     return terminals[Math.floor(Math.random() * terminals.length)];
@@ -27,7 +27,7 @@ const Confirmation: React.FC<ConfirmationProps> = ({ bookingDetails, bookingType
     return `${letter}${number}`;
   };
 
-  // Memoize the generated values so they don't change on re-renders
+
   const outboundTerminal = useMemo(() => bookingDetails?.outbound?.terminal || generateRandomTerminal(), [bookingDetails?.outbound?.terminal]);
   const outboundGate = useMemo(() => bookingDetails?.outbound?.gate || generateRandomGate(), [bookingDetails?.outbound?.gate]);
   const returnTerminal = useMemo(() => bookingDetails?.return?.terminal || generateRandomTerminal(), [bookingDetails?.return?.terminal]);
@@ -256,7 +256,6 @@ const Confirmation: React.FC<ConfirmationProps> = ({ bookingDetails, bookingType
           <Download className="w-4 h-4" />
           Download E-ticket
         </button>
-        {/* Print button removed for all booking types */}
       </div>
     </div>
   );

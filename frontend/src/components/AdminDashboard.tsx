@@ -3,21 +3,20 @@ import { getAllRequests, updateRequestStatus, getUserAirTaxiBookings, cancelBook
 import { getAllBookings } from '../services/bookingApi';
 import { useAuthContext } from '@asgardeo/auth-react';
 import { toast } from "@/hooks/use-toast";
-// ...existing code...
+
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Users, Clock, Plane } from 'lucide-react';
 
-// Dummy data for charts
-// --- DYNAMIC CHART DATA ---
+
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
-// Helper: Generate monthly stats for bar chart
+
 function generateMonthlyStats(flightBookings: any[], airTaxiBookings: any[]) {
-  // Group bookings by month (Jan-Dec) for both types
+ 
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const stats = months.map((name, idx) => ({ name, flights: 0, airTaxis: 0 }));
   flightBookings.forEach(b => {
-    // Use the most accurate departure date field for flights
+   
     const dateStr = b.departureDate || b.dateTime || b.createdAt;
     if (!dateStr) return;
     const date = new Date(dateStr);
@@ -26,7 +25,7 @@ function generateMonthlyStats(flightBookings: any[], airTaxiBookings: any[]) {
     if (stats[m]) stats[m].flights++;
   });
   airTaxiBookings.forEach(b => {
-    // Use the most accurate departure date field for air taxi
+   
     const dateStr = b.departureDate || b.pickupDate || b.dateTime || b.createdAt;
     if (!dateStr) return;
     const date = new Date(dateStr);
@@ -37,38 +36,31 @@ function generateMonthlyStats(flightBookings: any[], airTaxiBookings: any[]) {
   return stats;
 }
 
-// Helper: Generate status distribution for pie chart
+// Generate status distribution for pie chart
 function generateStatusData(flightBookings: any[], airTaxiBookings: any[]) {
-  // Initialize counters for each status
+
   let confirmedCount = 0;
   let pendingCount = 0;
   let modifiedCount = 0;
   
-  // Process flight bookings - skip cancelled bookings
+  
   flightBookings.forEach(b => {
-    // Check for explicit modification markers
     const isModified = (
-      // Check the status field
       (b.status && typeof b.status === 'string' && b.status.toLowerCase() === 'modified') ||
-      // Check if alreadyModified flag is true
       b.alreadyModified === true ||
-      // Check if modifiedAt exists and is different from createdAt
       (b.modifiedAt && b.createdAt && b.modifiedAt !== b.createdAt) ||
-      // Check for modification flag
       b.isModified === true ||
-      // Check for modification timestamp
       b.modificationDate != null ||
-      // Check if the booking has a modificationHistory array with entries
       (Array.isArray(b.modificationHistory) && b.modificationHistory.length > 0)
     );
     
-    // Skip cancelled bookings
+
     if (b.status && typeof b.status === 'string' && 
         (b.status.toLowerCase() === 'cancelled' || b.status.toLowerCase() === 'canceled')) {
       return;
     }
     
-    // Count based on status
+
     if (isModified) {
       modifiedCount++;
     } else if (b.status && typeof b.status === 'string' && 
@@ -81,31 +73,23 @@ function generateStatusData(flightBookings: any[], airTaxiBookings: any[]) {
     }
   });
   
-  // Process air taxi bookings - skip cancelled bookings
   airTaxiBookings.forEach(b => {
-    // Check for explicit modification markers
     const isModified = (
-      // Check the status field
       (b.status && typeof b.status === 'string' && b.status.toLowerCase() === 'modified') ||
-      // Check if alreadyModified flag is true
       b.alreadyModified === true ||
-      // Check if modifiedAt exists and is different from createdAt
       (b.modifiedAt && b.createdAt && b.modifiedAt !== b.createdAt) ||
-      // Check for modification flag
       b.isModified === true ||
-      // Check for modification timestamp
       b.modificationDate != null ||
-      // Check if the booking has a modificationHistory array with entries
       (Array.isArray(b.modificationHistory) && b.modificationHistory.length > 0)
     );
     
-    // Skip cancelled bookings
+
     if (b.status && typeof b.status === 'string' && 
         (b.status.toLowerCase() === 'cancelled' || b.status.toLowerCase() === 'canceled')) {
       return;
     }
     
-    // Count based on status
+
     if (isModified) {
       modifiedCount++;
     } else if (b.status && typeof b.status === 'string' && 
@@ -129,14 +113,14 @@ function generateStatusData(flightBookings: any[], airTaxiBookings: any[]) {
   return statusData.filter(item => item.value > 0);
 }
 
-// Helper: Find most popular route, handle undefined/unique cases
+
 function getMostPopularRoute(bookings: any[]) {
   const routeCounts: Record<string, number> = {};
   bookings.forEach(b => {
-    // Robustly extract departure and destination for all possible field shapes
+
     let from = b.from || b.pickupCity || b.departureCity || b.pickupLocation || (b.pickup && (b.pickup.name || b.pickup.city || b.pickup.airport)) || '';
     let to = b.to || b.destinationCity || b.arrivalCity || b.destinationLocation || (b.destination && (b.destination.name || b.destination.city || b.destination.airport)) || '';
-    // If still not found, check for nested objects
+
     if (typeof from === 'object' && from !== null) from = from.name || from.city || from.airport || '';
     if (typeof to === 'object' && to !== null) to = to.name || to.city || to.airport || '';
     from = String(from).trim();
@@ -164,7 +148,7 @@ const AdminDashboard: React.FC = () => {
   const [adminNotes, setAdminNotes] = useState('');
   const [showResponseModal, setShowResponseModal] = useState(false);
   
-  // ...existing code...
+
   
   useEffect(() => {
     fetchData();
@@ -183,8 +167,7 @@ const AdminDashboard: React.FC = () => {
       const allFlightBookings = await getAllBookings();
       setFlightBookings(allFlightBookings);
 
-      // TODO: Fetch all air taxi bookings if you have a getAllAirTaxiBookings API
-      // setAirTaxiBookings(await getAllAirTaxiBookings());
+   
     } catch (error) {
       console.error('Error fetching data:', error);
       toast({
@@ -210,29 +193,29 @@ const AdminDashboard: React.FC = () => {
     setIsProcessing(true);
     
     try {
-      // Get the request details before updating
+
       const requestToProcess = requests.find(req => req._id === requestId);
       
       if (!requestToProcess) {
         throw new Error("Request not found");
       }
       
-      // Update request status in the database
+
       await updateRequestStatus(requestId, status, adminNotes);
       
-      // Create a notification for the user
+
       await createNotification(requestToProcess, status, adminNotes);
       
-      // If the request is approved, take additional actions based on request type
+
       if (status === 'approved') {
         try {
           if (requestToProcess.requestType === 'cancellation') {
-            // If it's a cancellation request, delete the booking from the database
+           
             if (requestToProcess.bookingType === 'flight') {
               // Delete flight booking
               await cancelBooking(requestToProcess.bookingId, `Cancellation approved by admin: ${adminNotes}`);
               
-              // Update local state to reflect the cancellation
+             
               setFlightBookings(flightBookings.filter(booking => booking._id !== requestToProcess.bookingId));
               
               console.log(`Flight booking ${requestToProcess.bookingId} has been deleted from the database`);
@@ -240,17 +223,16 @@ const AdminDashboard: React.FC = () => {
               // Delete air taxi booking
               await cancelAirTaxiBooking(requestToProcess.bookingId, `Cancellation approved by admin: ${adminNotes}`);
               
-              // Update local state to reflect the cancellation
+             
               setAirTaxiBookings(airTaxiBookings.filter(booking => booking._id !== requestToProcess.bookingId));
               
               console.log(`Air taxi booking ${requestToProcess.bookingId} has been deleted from the database`);
             }
           } else if (requestToProcess.requestType === 'modification') {
-            // For modification requests, the actual modification will be handled by the user
-            // when they use the "Make Modifications" button that appears after approval
+            
             console.log(`Modification request for booking ${requestToProcess.bookingId} has been approved`);
             
-            // The database will be updated when the user submits their modifications
+          
           }
         } catch (actionError) {
           console.error('Error performing post-approval action:', actionError);
@@ -314,8 +296,7 @@ const AdminDashboard: React.FC = () => {
   const mostPopularFlightRoute = getMostPopularRoute(flightBookings);
   const mostPopularAirTaxiRoute = getMostPopularRoute(airTaxiBookings);
 
-  // --- FULLY MODERNIZED ADMIN DASHBOARD UI ---
-  // This block matches the screenshots: summary cards row, analytics cards, tabbed request management, all with live DB data.
+
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -401,7 +382,7 @@ const AdminDashboard: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm p-4">
         <div className="mb-4">
           <h2 className="text-xl font-bold text-navy-800 mb-3">Manage Booking Requests</h2>
-          {/* Upper tab bar */}
+         
           <div className="flex gap-8 border-b border-slate-200 mb-5">
             <button className={`relative pb-2 text-base font-medium transition-colors duration-150 ${activeTab === 'all' ? 'text-navy-800' : 'text-slate-500 hover:text-navy-700'}`} onClick={() => setActiveTab('all')}>
               All Requests
@@ -416,7 +397,7 @@ const AdminDashboard: React.FC = () => {
               {activeTab === 'airtaxi' && <span className="absolute left-0 -bottom-[2px] w-full h-0.5 bg-navy-700 rounded"></span>}
             </button>
           </div>
-          {/* Lower pill filter row */}
+     
           <div className="flex gap-3 mb-6">
             <button className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all duration-150 ${activeRequestType === 'all' ? 'bg-navy-700 text-white border-navy-700' : 'bg-white text-navy-700 border-slate-300 hover:bg-navy-50'}`} onClick={() => setActiveRequestType('all')}>All Types</button>
             <button className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all duration-150 ${activeRequestType === 'cancellation' ? 'bg-navy-700 text-white border-navy-700' : 'bg-white text-navy-700 border-slate-300 hover:bg-navy-50'}`} onClick={() => setActiveRequestType('cancellation')}>Cancellations</button>
@@ -480,7 +461,7 @@ const AdminDashboard: React.FC = () => {
         )}
       </div>
 
-      {/* --- RESPONSE MODAL (unchanged) --- */}
+
       {showResponseModal && selectedRequest && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-md w-full">

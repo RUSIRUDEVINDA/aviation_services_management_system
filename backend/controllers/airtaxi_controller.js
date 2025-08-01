@@ -5,7 +5,7 @@ const { sendBookingConfirmation } = require('../email');
 const getAllAirTaxiBookings = async (req, res, next) => {
     try {
         const bookings = await airTaxiBooking.find();
-        console.log("Retrieved air taxi bookings:", bookings); // Debugging log
+        console.log("Retrieved air taxi bookings:", bookings); 
         
         if (!bookings || bookings.length === 0) {
             return res.status(404).json({
@@ -70,7 +70,7 @@ const addAirTaxiBooking = async (req, res, next) => {
         });
 
         const savedBooking = await newBooking.save();
-        console.log("Saved air taxi booking:", savedBooking); // Debugging log
+        console.log("Saved air taxi booking:", savedBooking); 
 
         // Split contactName into firstName and lastName
         const contactNames = contactName.split(' ');

@@ -21,7 +21,6 @@ interface ModificationForm {
   departureDate: string;
   returnDate: string | null;
   passengers: number;
-  //flightcabin: string;
   outboundFlight: any | null;
   returnFlight: any | null;
   passengersDetails: any[];
@@ -31,7 +30,6 @@ interface ModificationForm {
     return: string[];
   };
   totalPrice: number;
-  //modificationReason: string;
   modificationDetails: string;
   modifyDates: boolean;
   modifyRoute: boolean;
@@ -60,7 +58,6 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
     departureDate: '',
     returnDate: null,
     passengers: 0,
-    //flightcabin: '',
     outboundFlight: null,
     returnFlight: null,
     passengersDetails: [],
@@ -70,7 +67,6 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
       return: []
     },
     totalPrice: 0,
-    //modificationReason: '',
     modificationDetails: '',
     modifyDates: false,
     modifyRoute: false,
@@ -102,13 +98,13 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
   const getRequestStatus = (bookingId: string) => {
     if (!userRequests.length) return null;
     
-    // Find the most recent request for this booking
+
     const request = userRequests.find(req => req.bookingId === bookingId);
     
     return request;
   };
   
-  // Check if a request of specific type has been rejected
+
   const isRequestRejected = (bookingId: string, requestType: 'modification' | 'cancellation') => {
     if (!userRequests.length) return false;
     
@@ -157,7 +153,7 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
     
     // If there's an approved modification request, proceed to modification form
     if (request && request.requestType === 'modification' && request.status === 'approved') {
-      // Map passenger details from backend format to frontend format
+      
       const mappedPassengerDetails = booking.passengersDetails.map((passenger: any) => ({
         firstName: passenger.firstName || '',
         lastName: passenger.lastName || '',
@@ -176,7 +172,6 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
         departureDate: booking.departureDate ? new Date(booking.departureDate).toISOString().split('T')[0] : '',
         returnDate: booking.returnDate ? new Date(booking.returnDate).toISOString().split('T')[0] : null,
         passengers: booking.passengers,
-        //flightcabin: booking.flightcabin,
         outboundFlight: booking.outboundFlight,
         returnFlight: booking.returnFlight,
         passengersDetails: mappedPassengerDetails,
@@ -186,7 +181,6 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
           return: [...booking.seatSelection.return]
         },
         totalPrice: booking.totalPrice,
-        //modificationReason: booking.modificationReason,
         modificationDetails: '',
         modifyDates: false,
         modifyRoute: false,
@@ -194,14 +188,12 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
         modifySeats: false,
       });
     } else {
-      // Otherwise, show the request form
       setShowModificationModal(true);
     }
   };
 
   const handlePassengerCountChange = (newCount: number) => {
     setModificationForm(prev => {
-      // Create a copy of the current passenger details
       const currentPassengers = [...prev.passengersDetails];
       
       // If increasing passenger count, add new passenger objects with empty fields
@@ -253,13 +245,9 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
       // Handle trip type change
       if (field === 'tripType') {
         if (value === 'Round Trip' && prev.tripType === 'One Way') {
-          // When changing from One Way to Round Trip:
-          // 1. Enable return flight selection
-          // 2. Add return flight price if available, otherwise add $200
-          // 3. Keep the outbound flight unchanged
+
           fetchReturnFlights(prev.from, prev.to, prev.departureDate, prev.passengers);
-          
-          // Get the return flight's actual price if available
+ 
           const returnFlightPrice = prev.returnFlight?.price || 200;
           
           return {
@@ -275,9 +263,7 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
             modifyRoute: false // Disable route modification to preserve outbound flight
           };
         } else if (value === 'One Way' && prev.tripType === 'Round Trip') {
-          // When changing from Round Trip to One Way:
-          // 1. Clear return flight data
-          // 2. Decrease price by the return flight's actual price
+
           const returnFlightPrice = prev.returnFlight?.price || 200;
           
           return {
@@ -330,8 +316,7 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
             totalPrice: Math.max(0, prev.totalPrice - priceReduction) // Ensure price doesn't go below 0
           };
         } else if (newCount > prev.passengers) {
-          // When adding passengers:
-          // Double the current price
+
           const doubledPrice = prev.totalPrice * 2; // Double the current price
           
           return {
@@ -854,13 +839,13 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
         bookingId: selectedBooking._id,
         userId: user.id, // Use the current user's ID
         userEmail: user.email, // Use the current user's email
-        tripType: modificationForm.tripType, // This should already be "Round Trip" or "One Way"
+        tripType: modificationForm.tripType, 
         from: modificationForm.from || selectedBooking.from,
         to: modificationForm.to || selectedBooking.to,
         departureDate: modificationForm.departureDate || selectedBooking.departureDate,
         returnDate: modificationForm.tripType === 'One Way' ? null : (modificationForm.returnDate || selectedBooking.returnDate),
         passengers: modificationForm.passengers,
-        flightcabin: selectedBooking.flightcabin, // Keep the original cabin class
+        flightcabin: selectedBooking.flightcabin, 
         outboundFlight: formattedOutboundFlight,
         returnFlight: formattedReturnFlight,
         passengersDetails: updatedPassengerDetails.length > 0 ? updatedPassengerDetails : selectedBooking.passengersDetails,
@@ -884,12 +869,12 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
       
       console.log("Sending modification data:", modificationData);
       
-      // Call the API to modify the booking
+     
       const updatedBooking = await modifyBooking(selectedBooking._id, modificationData);
       
       console.log('Booking modified successfully:', updatedBooking);
       
-      // Explicitly set the booking status to 'modified'
+      
       const updatedBookingWithStatus = {
         ...selectedBooking,
         ...updatedBooking,  // Include any updates from the server
@@ -897,37 +882,32 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
         createdAt: modifiedAtStr
       };
       
-      // Update the selected booking with the modified status
+   
       setSelectedBooking(updatedBookingWithStatus);
       
-      // Directly update the bookings array to reflect the change in the UI
-      // This ensures the status is updated even if the backend doesn't return it correctly
+      
       const updatedBookingsArray = bookings.map(booking => 
         booking._id === selectedBooking._id ? 
           {...booking, status: 'modified'} : 
           booking
       );
-      
-      // If the parent component provided bookings as a prop, we need to update it
-      // This is a workaround since we can't directly modify props
-      // The parent component will re-render with the updated bookings
+
       if (onRequestModification && typeof onRequestModification === 'function') {
-        // Call onRequestModification with the updated booking to signal the parent to update
+
         onRequestModification({...selectedBooking, status: 'modified'});
       }
       
-      // Log the updated booking with status for debugging
+
       console.log('Updated booking with status:', updatedBookingWithStatus);
       
-      // Update the bookings array with the modified booking
-      // This ensures the UI reflects the change even if the refresh fails
+
       const updatedBookings = bookings.map(b => 
         b._id === selectedBooking._id ? {...b, status: 'modified'} : b
       );
       
       // Force an immediate refresh to update the UI and disable the button
       if (typeof onRefresh === 'function') {
-        // Add a small delay to ensure the backend has time to process the update
+        
         setTimeout(() => {
           console.log('Refreshing bookings...');
           onRefresh();
@@ -942,13 +922,13 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
       // Close the modification form
       setShowModificationForm(false);
       
-      // Force a complete refresh of the bookings to ensure the UI shows the correct status
+    
       setTimeout(() => {
         if (typeof onRefresh === 'function') {
           console.log('Forcing a complete refresh of bookings...');
           onRefresh();
         }
-      }, 1000); // Longer delay to ensure backend has time to process
+      }, 1000); 
       setModificationForm({
         tripType: '',
         from: '',
@@ -991,14 +971,13 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
 
 
 
-  // Function to fetch available return flights
+
   const fetchReturnFlights = async (from: string, to: string, departureDate: string, passengers: number) => {
     if (!from || !to || !departureDate || !passengers) return;
     
     setIsLoadingReturnFlights(true);
     try {
-      // Instead of trying to fetch flights dynamically, we'll create some mock flights
-      // This ensures we always have flights to display
+
       const mockReturnFlights = [
         {
           id: `${to.substring(0, 3)}-${from.substring(0, 3)}-001`,
@@ -1092,10 +1071,10 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
 
   // Function to get available flights for a route
   const getAvailableFlights = (from: string, to: string) => {
-    // Generate a deterministic seed based on the route
+    
     const seed = from.charCodeAt(0) + to.charCodeAt(0);
     
-    // Mock flight data with consistent values based on the route
+
     const mockFlights = [
       {
         flightNumber: `AX${100 + (seed % 900)}`,
@@ -1138,26 +1117,26 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
   // Function to handle flight selection
   const handleFlightSelection = (flightType: 'outbound' | 'return', flight: any) => {
     setModificationForm(prev => {
-      // Get the previous flight to calculate price difference
+     
       const previousFlight = flightType === 'outbound' ? prev.outboundFlight : prev.returnFlight;
       
       // Calculate price difference
       let priceDifference = 0;
       
-      // For outbound flights, we're replacing the existing flight
+      
       if (flightType === 'outbound') {
         if (previousFlight) {
-          // If replacing an existing outbound flight, calculate the difference
+          
           priceDifference = flight.price - previousFlight.price;
         } else {
-          // If adding a new outbound flight, add its full price
+        
           priceDifference = flight.price;
         }
       } 
-      // For return flights, we're adding to the existing outbound flight
+     
       else if (flightType === 'return') {
         if (previousFlight) {
-          // If replacing an existing return flight, calculate the difference
+   
           priceDifference = flight.price - previousFlight.price;
         } else {
           // If adding a new return flight, add its full price
@@ -1171,8 +1150,7 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
         [flightType === 'outbound' ? 'outboundFlight' : 'returnFlight']: flight
       };
       
-      // Calculate the new total price by adding the price difference
-      // Multiply by number of passengers
+
       const newTotalPrice = prev.totalPrice + (priceDifference * prev.passengers);
       
       return {
@@ -1439,7 +1417,7 @@ const UserBookings: React.FC<UserBookingsProps> = ({ user, bookings, onRefresh, 
                     const isCancellationApproved = request && request.requestType === 'cancellation' && request.status === 'approved';
                     const isModificationRejected = isRequestRejected(booking._id, 'modification');
                     const isCancellationRejected = isRequestRejected(booking._id, 'cancellation');
-                    // Log booking status for debugging
+                    
                     console.log(`Booking ${booking._id} status:`, booking.status);
                     
                     // Check if booking is already modified - use lowercase comparison for case insensitivity

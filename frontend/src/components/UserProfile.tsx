@@ -222,34 +222,7 @@ const UserProfile: React.FC = () => {
           <div className="bg-white rounded-xl shadow-sm p-6 border border-navy-100">
             <h2 className="text-2xl font-bold text-navy-900 mb-6">Your Travel Dashboard</h2>
             
-            {/*<div className="mb-8">
-              <h3 className="text-xl font-semibold text-navy-800 mb-4">Upcoming Trips</h3>
-              {isLoading ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-navy-500 mx-auto"></div>
-                </div>
-              ) : bookings.length > 0 ? (
-                <div className="space-y-4">
-                  {bookings.map(booking => (
-                    <div key={booking.id} className="border border-navy-100 rounded-lg p-4 hover:bg-navy-50 transition-colors">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h4 className="font-medium text-navy-800">{booking.destination}</h4>
-                          <p className="text-sm text-navy-600">{new Date(booking.date).toLocaleDateString()}</p>
-                        </div>
-                        <span className="bg-navy-100 text-navy-800 px-3 py-1 rounded-full text-sm capitalize">
-                          {booking.type}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 bg-navy-50 rounded-lg border border-navy-100">
-                  <p className="text-navy-600">No upcoming trips found</p>
-                </div>
-              )}
-            </div>*/}
+           
             
             <div>
               <h3 className="text-xl font-semibold text-navy-800 mb-4">Popular Destinations</h3>

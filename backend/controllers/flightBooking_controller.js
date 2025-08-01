@@ -5,7 +5,7 @@ const { sendBookingConfirmation } = require('../email');
 const getAllflightBookings = async (req, res, next) => {
     try {
         const flightBookings = await flightBooking.find();
-        console.log("Retrieved flight bookings:", flightBookings); // Debugging log
+        console.log("Retrieved flight bookings:", flightBookings); 
         
         if (!flightBookings || flightBookings.length === 0) {
             return res.status(404).json({

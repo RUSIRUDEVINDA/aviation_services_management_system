@@ -4,13 +4,13 @@ import { toast } from "@/hooks/use-toast";
 import { login } from '../services/auth';
 import { User } from 'lucide-react';
 
-// Extend the User type to include role
+
 interface User {
   id: string;
   name: string;
   email: string;
   isAdmin: boolean;
-  role?: string; // Add the role property
+  role?: string; 
 }
 
 const Login = () => {
